@@ -1,0 +1,5 @@
+.home-page {
+    display: flexbox;
+    height: 100vh;
+    background-color: var(--mui-palette-background-default, #121212);
+  }
