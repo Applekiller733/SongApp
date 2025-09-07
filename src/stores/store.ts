@@ -12,9 +12,8 @@ const store = configureStore({
 );
 
 // if (typeof window !== undefined) {
-//     userstore.subscribe(() => {
-//         localStorage.setItem('token', JSON.stringify(userstore.getState().currentuser.token)),
-//             localStorage.setItem('currentuser', JSON.stringify(userstore.getState().currentuser.user))
+//     store.subscribe(() => {
+//         localStorage.setItem('currentuser', JSON.stringify(store.getState().userdata.currentuser))
 //     })
 // }
 

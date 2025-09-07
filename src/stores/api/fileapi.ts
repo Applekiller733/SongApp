@@ -1,0 +1,14 @@
+import React, { useState } from "react";
+import axios from "axios";
+import type { FileModel } from "../../models/file";
+
+const API_URL = `${import.meta.env.VITE_API_URL}/files`
+
+
+export function apiuploadfile(request: FormData){
+    return axios.post(`${API_URL}`, request);
+}
+
+export function apigetfile(){
+    return "NOT IMPLEMENTED";
+}

@@ -7,7 +7,8 @@ import './signup.css';
 import type { RegisterRequest } from "../../../models/user";
 import { useAppDispatch } from "../../../hooks/hooks";
 import { useState } from "react";
-import { fetchUsers, register } from "../../../stores/slices/userdataslice";
+import * as Yup from "yup";
+import { register } from "../../../stores/thunks/userthunks";
 
 export default function Signup() {
     const dispatch = useAppDispatch();
@@ -24,13 +25,30 @@ export default function Signup() {
         }
     }
 
-    const SignupFormik = useFormik({ // ADD ERROR TO CHECK FOR CONFIRM PASS AND PASSWORD TO MATCH UP
+    const validationschema = Yup.object().shape(
+            {
+                email: Yup.string()
+                    .email('Must be a valid email address')
+                    .required('Email is Required'),
+                username: Yup.string()
+                    .required('Username is Required'),
+                password: Yup.string()
+                    .required('Password is Required')
+                    .min(6, 'Password must be at least 6 characters long'),
+                confirmpassword: Yup.string()
+                    .required('Confirm Password is Required')
+                    .oneOf([Yup.ref('password')], 'Your passwords do not match.')
+            }
+        )
+
+    const SignupFormik = useFormik({ 
         initialValues: {
             email: '',
             username: '',
             password: '',
             confirmpassword: '',
         },
+        validationSchema: validationschema,
         onSubmit: (values) => {
             handleSubmit({
                 username: values.username,
@@ -84,6 +102,7 @@ export default function Signup() {
                             name="password"
                             label="Password"
                             variant="outlined"
+                            type="password"
                             fullWidth
                             margin="normal"
                             className="field"
@@ -98,6 +117,7 @@ export default function Signup() {
                             name="confirmpassword"
                             label="Confirm Password"
                             variant="outlined"
+                            type="password"
                             fullWidth
                             margin="normal"
                             className="field"

@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router";
 import "../signup/signup.css";
 import { useEffect } from "react";
 import { useAppDispatch } from "../../../hooks/hooks";
-import { verify } from "../../../stores/slices/userdataslice";
+import { verify } from "../../../stores/thunks/userthunks";
 
 export function VerifyEmail() {
     const { token } = useParams();

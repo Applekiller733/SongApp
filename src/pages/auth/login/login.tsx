@@ -1,71 +1,59 @@
-import { useSelector } from "react-redux";
 // import { updateUser, updateToken } from "../../stores/slices/currentuserslice";
 import './login.css';
-import { fetchUsers, selectAllUsers } from "../../../stores/slices/userdataslice";
-import { updateCurrentUser } from "../../../stores/slices/userdataslice";
-import { useEffect, useState } from "react";
-import { useAppDispatch } from "../../../hooks/hooks";
+import { useState } from "react";
+import { useAppDispatch, useUpdateCurrentUser} from "../../../hooks/hooks";
 import { Box, Paper, Typography, TextField, Button, Backdrop, CircularProgress, Alert } from '@mui/material';
 import { ThemeProvider } from "@emotion/react";
 import { darkTheme } from '../../../themes/themes';
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 import { useFormik } from 'formik';
-
+import type { AuthenticateRequest, User } from "../../../models/user";
+import * as Yup from "yup";
+import { login } from '../../../stores/thunks/userthunks';
 
 export default function Login() {
-    const users = useSelector(selectAllUsers);
+    // const users = useSelector(selectAllUsers);
     const dispatch = useAppDispatch();
     const [status, setStatus] = useState('init');
 
-    useEffect(() => {
-        // dispatch(fetchUsers());
-
-        //   userstore.subscribe(() => {
-        //       localStorage.setItem('token', JSON.stringify(userstore.getState().currentuser.token)),
-        //           localStorage.setItem('currentuser', JSON.stringify(userstore.getState().currentuser.user))
-        //   });
-
-    }, [])
+    // useEffect(() => {
+    // }, [])
 
 
-    function handleSubmit(username: string, password: string) {
-        // let username = 
-        // e.preventDefault();
-        // let form = e.currentTarget;
-        // let username = (form.elements.namedItem('username') as HTMLInputElement).value as string;
-        // let password = (form.elements.namedItem('password') as HTMLInputElement).value as string;
-       
-        // setStatus('loading');
-        // if (checkCredentials(username, password)) {
-        //     console.log('logged in');
-        //     dispatch(updateCurrentUser({
-        //         id: '4',
-        //         username: username,
-        //         password: password,
-        //     }));
-        //     // dispatch(updateToken('FAJFAHFJAJFJJHFHAJFHAJFHA'));
-        //     setTimeout(() => setStatus('successful'), 300);
-        // }
-        // else {
-        //     console.log(`login failed`);
-        //     setStatus('failed');
-        // }
+    async function handleSubmit(request: AuthenticateRequest) {
+        setStatus('loading');
+        let response = await dispatch(login(request));
+        if (response.payload){
+            setStatus('successful');
+        }
+        else {
+            setStatus('failed');
+        }
     }
 
-    // function checkCredentials(username: string, password: string) {
-    //     if (users.find(u => u.username === username && u.password === password) !== undefined) {
-    //         return true;
-    //     }
-    //     return false;
-    // }
+    const validationschema = Yup.object().shape(
+        {
+            email: Yup.string()
+                .email('Must be a valid email address')
+                .required('Email is Required'),
+            password: Yup.string()
+                .required('Password is Required')
+                .min(6, 'Password must be at least 6 characters long'),
+        }
+    )
 
     const LoginFormik = useFormik({
         initialValues: {
-            username: '',
+            email: '',
             password: '',
         },
-        //validation schema?
-        onSubmit: (values) => { handleSubmit(values.username, values.password) }
+        validationSchema: validationschema,
+        onSubmit: (values) => {
+            handleSubmit({
+                email: values.email,
+                password: values.password,
+            })
+        }
     })
 
     return (
@@ -77,17 +65,17 @@ export default function Login() {
                     </Typography>
                     <form onSubmit={LoginFormik.handleSubmit}>
                         <TextField
-                            id="username"
-                            name="username"
-                            label="Username"
+                            id="email"
+                            name="email"
+                            label="Email"
                             variant="outlined"
                             fullWidth
                             margin="normal"
                             className="field"
-                            value={LoginFormik.values.username}
+                            value={LoginFormik.values.email}
                             onChange={LoginFormik.handleChange}
-                            error={LoginFormik.touched.username && Boolean(LoginFormik.errors.username)}
-                            helperText={LoginFormik.touched.username && LoginFormik.errors.username}
+                            error={LoginFormik.touched.email && Boolean(LoginFormik.errors.email)}
+                            helperText={LoginFormik.touched.email && LoginFormik.errors.email}
                         ></TextField>
 
                         <TextField
@@ -115,12 +103,11 @@ export default function Login() {
                             Login
                         </Button>
                     </form>
-                    <Link to='../'>Forgot your password? Reset it here</Link>
+                    <Link to='../forgot-password'>Forgot your password? Reset it here</Link>
+                    <br></br>
                     <Link to='../signup'>Not yet registered? Create an account here</Link>
                 </Paper>
-                {status === 'successful' && <Alert severity="success">
-                    Successful Login.
-                </Alert>}
+                {status === 'successful' && <Navigate to='../'></Navigate>}
                 {status === 'failed' && <Alert severity="error">
                     Login failed. Invalid credentials.
                 </Alert>}

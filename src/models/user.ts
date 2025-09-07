@@ -1,7 +1,11 @@
+import type { FileModel } from "./file"
+
 export interface User{
     id?: number,
     username: string,
-    email:string
+    email:string,
+    role:string,
+    token:string,
 }
 
 export interface RegisterRequest{
@@ -14,4 +18,36 @@ export interface RegisterRequest{
 
 export interface VerifyEmailRequest {
     token: string,
+}
+
+export interface AuthenticateRequest {
+    email: string,
+    password: string,
+}
+
+export interface ForgotPasswordRequest {
+    email: string,
+}
+
+export interface ResetPasswordRequest {
+    token: string,
+    password: string,
+    confirmpassword: string,
+}
+
+export interface UserProfile {
+    username: string,
+    role: string,
+    createdAt: string,
+    updatedAt: string,
+}
+
+export interface UpdateUserRequest{
+    id: number | null,
+    username: string | null,
+    email: string | null,
+    password: string | null,
+    confirmpassword: string | null,
+    role: string | null,
+    profilepicture: FileModel | null,
 }

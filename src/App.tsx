@@ -10,25 +10,36 @@ import { darkTheme } from './themes/themes'
 import { SignupSuccess } from './pages/auth/signup/signupsuccess'
 import { ResetPassword } from './pages/auth/reset-password/reset-password'
 import { VerifyEmail } from './pages/auth/verify-email/verify-email'
+import { ForgotPassword } from './pages/auth/forgot-password/forgot-password'
+import Profile from './pages/profile/profile'
+import EditProfile from './pages/profile/editprofile'
+import { useAppDispatch } from './hooks/hooks'
+import { setAppDispatch } from './stores/storedispatch'
+import { useEffect } from 'react'
 
 function App() {
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    setAppDispatch(dispatch);
+  }, [dispatch]);
 
   return (
-    <Provider store={userstore}>
-      <ThemeProvider theme={darkTheme}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Home></Home>}></Route>
-            <Route path="/login" element={<Login />}></Route>
-            <Route path="/signup" element={<Signup />}></Route>
-            <Route path="/signup-success" element={<SignupSuccess/>}></Route>
-            <Route path="/verify-email/:token" element={<VerifyEmail/>}></Route>
-            <Route path="/reset-password" element={<ResetPassword/>}></Route>
-            {/* <Route path="" element={<Home />}></Route> */}
-          </Routes>
-        </BrowserRouter>
-      </ThemeProvider>
-    </Provider>
+    <ThemeProvider theme={darkTheme}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home></Home>}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/signup" element={<Signup />}></Route>
+          <Route path="/signup-success" element={<SignupSuccess />}></Route>
+          <Route path="/verify-email/:token" element={<VerifyEmail />}></Route>
+          <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+          <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
+          <Route path="/profile/:id" element={<Profile />}></Route>
+          <Route path="/profile/:id/edit" element={<EditProfile />}></Route>
+          {/* <Route path="" element={<Home />}></Route> */}
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }
 
