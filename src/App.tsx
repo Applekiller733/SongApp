@@ -16,6 +16,7 @@ import EditProfile from './pages/profile/editprofile'
 import { useAppDispatch } from './hooks/hooks'
 import { setAppDispatch } from './stores/storedispatch'
 import { useEffect } from 'react'
+import ForYou from './pages/for-you/for-you'
 
 function App() {
   const dispatch = useAppDispatch();
@@ -36,6 +37,7 @@ function App() {
           <Route path="/reset-password/:token" element={<ResetPassword />}></Route>
           <Route path="/profile/:id" element={<Profile />}></Route>
           <Route path="/profile/:id/edit" element={<EditProfile />}></Route>
+          <Route path="/for-you" element={<ForYou/>}></Route>
           {/* <Route path="" element={<Home />}></Route> */}
         </Routes>
       </BrowserRouter>

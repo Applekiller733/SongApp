@@ -1,9 +1,10 @@
-import { TablePagination, Typography } from "@mui/material";
+import { CircularProgress, TablePagination, Typography } from "@mui/material";
 import "./smallprofile.css";
 import type { UserProfile } from "../../models/user";
 import { useAppDispatch } from "../../hooks/hooks";
 import { useEffect, useState } from "react";
 import { getProfilePicture } from "../../stores/thunks/userthunks";
+
 
 export interface SmallProfileProps extends UserProfile {
     id: number,
@@ -16,23 +17,28 @@ export default function SmallProfile({ username, role, createdAt, updatedAt, id 
 
 
     useEffect(() => {
+        setImgStatus('loading');
         const fetchImage = async () => {
             const response = await dispatch(getProfilePicture(id));
-            
-            console.log(response.payload);
+
+            // console.log(response.payload);
             const url = URL.createObjectURL(response.payload);
-            console.log(url);
+            // console.log(url);
             setImgUrl(url);
+            setImgStatus('successful');
 
             return () => URL.revokeObjectURL(url);
-          };
-          fetchImage();
+        };
+        fetchImage();
     }, [])
 
     return (
         <div className="smallprofile">
             {imgUrl === '' ?
-                <img src="/default-profile.jpg" className="profile-picture"></img>
+                imgStatus === 'loading' ?
+                    <img src="/default-profile.jpg" className="profile-picture"></img>
+                    :
+                    <CircularProgress></CircularProgress>
                 :
                 <img src={`${imgUrl}`} className="profile-picture"></img>
             }

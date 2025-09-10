@@ -44,8 +44,9 @@ export default function Navbar() {
 
           <Box className="navbar-links">
             <Button color="inherit" href='/'>Home</Button>
-            {/* <Button color="inherit">About</Button>
-                 */}
+            {
+              loggedIn && <Button color="inherit" href='/for-you'>For You</Button>
+            }
           </Box>
 
 

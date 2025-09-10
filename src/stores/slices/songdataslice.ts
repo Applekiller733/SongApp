@@ -3,6 +3,7 @@ import type Song from '../../models/song';
 import type { RootState } from '../store';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchSongsMocked } from '../api/songapi';
+import { fetchSongs } from '../thunks/songthunks';
 
 const getInitialState = (): { songs: Song[], status: string, errormsg: string } => {
 
@@ -13,18 +14,6 @@ const getInitialState = (): { songs: Song[], status: string, errormsg: string } 
     };
 };
 
-export const fetchSongs = createAsyncThunk('songs/fetchSongs', async () => {
-    //TODO: replace with actual API call
-    // 
-    try {
-        const response = await fetchSongsMocked() as Song[];
-
-        return response;
-    }
-    catch (err: any) {
-        return err.message;
-    }
-});
 
 export const songdataSlice = createSlice(
     {
