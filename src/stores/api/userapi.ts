@@ -6,6 +6,7 @@ import type { AuthenticateRequest, ForgotPasswordRequest, RegisterRequest, Reset
 import { updateCurrentUser } from "../slices/userdataslice";
 import type { AppDispatch } from "../store";
 import { getAppDispatch } from "../storedispatch";
+import authHeader from "./apihelper";
 
 const API_URL = `${import.meta.env.VITE_API_URL}/accounts`
 
@@ -73,10 +74,13 @@ export function apifetchUsersMocked() {
 
 export function apifetchUsers() {
     //check if works
-    return fetch(`${API_URL}`, {
+    const url = `${API_URL}`;
+    return fetch(url, {
         method: "GET",
-        headers: { "Content-Type": "application/json", ...authHeader(`${API_URL}/refresh-token`) },
+        headers: { "Content-Type": "application/json", ...authHeader(url) },
+        credentials: 'include',
     })
+    .then(response => response.json());
 }
 
 export function apifetchUser(id: number) {
@@ -84,7 +88,8 @@ export function apifetchUser(id: number) {
 }
 
 export function apifetchUserProfile(id: number) {
-    return fetch(`${API_URL}/profile/${id}`, {
+    const url = `${API_URL}/profile/${id}`;
+    return fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
     })
@@ -92,13 +97,15 @@ export function apifetchUserProfile(id: number) {
 }
 
 export function apigetprofilepicture(id: number){
-    return fetch(`${API_URL}/profile/${id}/picture`, {
+    const url = `${API_URL}/profile/${id}/picture`;
+    return fetch(url, {
         method: "GET"
     });
 }
 
 export function apiregister(request: RegisterRequest) {
-    return fetch(`${API_URL}/register`, {
+    const url = `${API_URL}/register`
+    return fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request)
@@ -106,7 +113,8 @@ export function apiregister(request: RegisterRequest) {
 }
 
 export function apiverify(request: VerifyEmailRequest) {
-    return fetch(`${API_URL}/verify-email`, {
+    const url = `${API_URL}/verify-email`;
+    return fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request)
@@ -114,7 +122,8 @@ export function apiverify(request: VerifyEmailRequest) {
 }
 
 export function apilogin(request: AuthenticateRequest) {
-    return fetch(`${API_URL}/authenticate`, {
+    const url = `${API_URL}/authenticate`
+    return fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
@@ -141,9 +150,10 @@ export function apilogin(request: AuthenticateRequest) {
 
 export function apilogout() {
     // revoke token, stop refresh timer, remove from local storage
-    fetch(`${API_URL}/revoke-token`, {
+    const url = `${API_URL}/revoke-token`;
+    fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeader(`${API_URL}/revoke-token`) },
+        headers: { "Content-Type": "application/json", ...authHeader(url) },
         credentials: "include"
     });
     stopRefreshTokenTimer();
@@ -152,7 +162,8 @@ export function apilogout() {
 }
 
 export function apiforgotpassword(request: ForgotPasswordRequest) {
-    return fetch(`${API_URL}/forgot-password`, {
+    const url = `${API_URL}/forgot-password`;
+    return fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
@@ -160,16 +171,21 @@ export function apiforgotpassword(request: ForgotPasswordRequest) {
 }
 
 export function apiresetpassword(request: ResetPasswordRequest) {
-    return fetch(`${API_URL}/reset-password`, {
+    const url = `${API_URL}/reset-password`;
+    return fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
     })
 }
 
+//todo maybe refactor
 export function apiupdateuser(request: UpdateUserRequest) {
+    const url = `${API_URL}`;
     const formData = new FormData();
+    var stringid = (request.id as unknown) as string;
 
+    formData.append("Id", stringid);
     if (request.username) formData.append("UserName", request.username);
     if (request.email) formData.append("Email", request.email);
     if (request.password) formData.append("Password", request.password);
@@ -182,10 +198,10 @@ export function apiupdateuser(request: UpdateUserRequest) {
         formData.append("ProfilePicture.FormFile", request.profilepicture.file);
     }
 
-    return fetch(`${API_URL}/${request.id}`, {
+    return fetch(url, {
         method: "PUT",
         headers: {
-            ...authHeader(`${API_URL}/${request.id}`),
+            ...authHeader(url),
         },
         body: formData,
     })
@@ -204,13 +220,21 @@ export function apiupdateuser(request: UpdateUserRequest) {
         });
 }
 
+export function apideleteuser(id: number) {
+    const url = `${API_URL}/${id}`;
+    return fetch(url, {
+        method: "DELETE",
+        headers: {"Content-Type": "application/json", ...authHeader(url)}
+    })
+}
 
 function apirefreshToken() {
-    return fetch(`${API_URL}/refresh-token`, {
+    const url = `${API_URL}/refresh-token`;
+    return fetch(url, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            ...authHeader(`${API_URL}/refresh-token`)
+            ...authHeader(url)
         },
         credentials: "include"
     })
@@ -243,6 +267,7 @@ function apirefreshToken() {
 
 let refreshTokenTimeout: any;
 
+//todo verify if token refresh timer works and fix if not
 function startRefreshTokenTimer() {
     console.log("START OF REFRESH TOKEN TIMER");
     console.log(localStorage.getItem('currentuser'));
@@ -282,18 +307,3 @@ function stopRefreshTokenTimer() {
     clearTimeout(refreshTokenTimeout);
 }
 
-function authHeader(url: any) {
-    // return auth header with jwt if user is logged in and request is to the api url
-    //@ts-ignore
-    const user = JSON.parse(localStorage.getItem('currentuser'));
-    console.log(user);
-    const isLoggedIn = user !== undefined && user.jwtToken !== null;
-    const isApiUrl = url.startsWith(API_URL);
-    console.log(isLoggedIn);
-    console.log(isApiUrl);
-    if (isLoggedIn && isApiUrl) {
-        return { Authorization: `Bearer ${user.token}` };
-    } else {
-        return ''
-    };
-}

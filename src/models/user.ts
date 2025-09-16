@@ -43,11 +43,19 @@ export interface UserProfile {
 }
 
 export interface UpdateUserRequest{
-    id: number | null,
+    id: number,
     username: string | null,
     email: string | null,
     password: string | null,
     confirmpassword: string | null,
+    role: string | null,
+    profilepicture: FileModel | null,
+}
+
+export interface UserAdminView {
+    id: number | null,
+    username: string | null,
+    email: string | null,
     role: string | null,
     profilepicture: FileModel | null,
 }

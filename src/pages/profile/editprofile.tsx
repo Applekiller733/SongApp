@@ -15,6 +15,7 @@ export default function EditProfile() {
     const dispatch = useAppDispatch();
     const [status, setStatus] = useState('init');
 
+    //maybe just use a single usestate with a FileModel type
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState('');
     const [extension, setExtension] = useState('');
@@ -110,6 +111,7 @@ export default function EditProfile() {
                             Save Changes
                         </Button>
                     </form>
+                    <Button color='error' href={`/profile/${paramid}`}>Cancel</Button>
                     {status === 'successful' && <Navigate to={`../profile/${paramid}`}></Navigate>}
                 </Paper>
             </Box>

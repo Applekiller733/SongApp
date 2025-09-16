@@ -1,8 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import type Song from '../../models/song';
+import type {Song} from '../../models/song';
 import type { RootState } from '../store';
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchSongsMocked } from '../api/songapi';
 import { fetchSongs } from '../thunks/songthunks';
 
 const getInitialState = (): { songs: Song[], status: string, errormsg: string } => {
@@ -21,7 +19,7 @@ export const songdataSlice = createSlice(
         initialState: getInitialState(),
         reducers: {
             updateUpvotes: (state, action) => {
-                const song = state.songs.find(s => s.id === action.payload.id);
+                const song = state.songs.find((s:any) => s.id === action.payload.id);
                 if (song) {
                     song.upvotes = action.payload.upvotes;
                     console.log(song.upvotes);

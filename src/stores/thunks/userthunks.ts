@@ -1,16 +1,33 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apifetchUserProfile, apifetchUsers, apiforgotpassword, apigetprofilepicture, apilogin, apilogout, apiregister, apiresetpassword, apiupdateuser, apiverify } from "../api/userapi";
-import type { AuthenticateRequest, ForgotPasswordRequest, RegisterRequest, ResetPasswordRequest, UpdateUserRequest, VerifyEmailRequest } from "../../models/user";
-import type { AppDispatch } from "../store";
+import {
+    apideleteuser,
+    apifetchUserProfile,
+    apifetchUsers,
+    apiforgotpassword,
+    apigetprofilepicture,
+    apilogin, apilogout,
+    apiregister,
+    apiresetpassword,
+    apiupdateuser,
+    apiverify
+} from "../api/userapi";
+import type {
+    AuthenticateRequest,
+    ForgotPasswordRequest,
+    RegisterRequest,
+    ResetPasswordRequest,
+    UpdateUserRequest,
+    VerifyEmailRequest
+} from "../../models/user";
 
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
     try {
         const response: any = await apifetchUsers();
-        if (!response.ok) {
+        if (!response) {
             throw new Error("Fetch Users failed");
         }
-        return await response.json();
+        return response;
     }
     catch (err: any) {
         return err.message;
@@ -41,15 +58,15 @@ export const fetchUserProfile = createAsyncThunk('users/fetchUserProfile', async
 })
 
 export const getProfilePicture = createAsyncThunk('users/profile-picture', async (id: number) => {
-    try{
+    try {
         const response = await apigetprofilepicture(id);
-        if (!response){
+        if (!response) {
             throw new Error("Fetching Profile Picture Failed");
         }
 
         return await response.blob();
     }
-    catch(err:any){
+    catch (err: any) {
         return err.message;
     }
 })
@@ -143,6 +160,21 @@ export const update = createAsyncThunk('users/update', async (request: UpdateUse
 
         if (!response) {
             throw new Error("Update Failed");
+        }
+
+        return response;
+    }
+    catch (err: any) {
+        return err.message;
+    }
+})
+
+export const deleteuser = createAsyncThunk('users/delete', async (id: number) => {
+    try {
+        const response = await apideleteuser(id);
+
+        if (!response.ok) {
+            throw new Error("Delete failed");
         }
 
         return response;

@@ -6,7 +6,8 @@ const API_URL = `${import.meta.env.VITE_API_URL}/files`
 
 
 export function apiuploadfile(request: FormData){
-    return axios.post(`${API_URL}`, request);
+    const url = `${API_URL}`;
+    return axios.post(url, request);
 }
 
 export function apigetfile(){

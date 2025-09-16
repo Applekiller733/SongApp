@@ -1,5 +1,10 @@
 
-//const API_URL = "PLACEHOLDER";
+import type {Song, CreateSongRequest, DeleteSongRequest, FlipLikeRequest} from "../../models/song";
+// import type Song from "../../models/song";
+import authHeader from "./apihelper";
+
+
+const API_URL = `${import.meta.env.VITE_API_URL}/songs`;
 
 const songdata = [
     {
@@ -51,9 +56,80 @@ const songdata = [
 ]
 
 export function fetchSongsMocked() {
-    return new Promise(resolve => setTimeout(() => {resolve(songdata)}, 500));
+    return new Promise(resolve => setTimeout(() => { resolve(songdata) }, 500));
 }
 
-export function fetchSongs() {
-    return "NOT IMPLEMENTED";
+//todo test if it properly returns the song list
+export function apifetchsongs() {
+    const url = `${API_URL}`;
+    return fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(response => response.json())
+        // .then(response => {
+        //     return response.map((s: any) => {
+        //         const song: Song = {
+        //             id: s.id,
+        //             name: s.name,
+        //             artist: s.artist,
+        //             upvotes: s.upvotes,
+        //             image: s.image,
+        //             video: s.video,
+        //             sound: s.sound,
+        //         }
+        //         return song;
+        //     })
+        // }
+        // )
+}
+
+//todo test if it properly returns song
+export function apifetchsongbyid(id: number) {
+    const url = `${API_URL}/${id}`;
+    return fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+        .then(response => response.json())
+        // .then(s => {
+        //     const song: Song = {
+        //         id: s.id,
+        //         name: s.name,
+        //         artist: s.artist,
+        //         upvotes: s.upvotes,
+        //         imageUrl: s.imageUrl,
+        //         videoUrl: s.videoUrl,
+        //         soundUrl: s.soundUrl,
+        //     }
+        //     return song;
+        // })
+}
+
+export function apicreatesong(request: CreateSongRequest) {
+    const url = `${API_URL}/create-song`;
+    console.log(request);
+    return fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeader(url) },
+        body: JSON.stringify(request),
+    })
+}
+
+export function apideletesong(request: DeleteSongRequest) {
+    const url = `${API_URL}`;
+    return fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", ...authHeader(url) },
+        body: JSON.stringify(request)
+    })
+}
+
+export function apifliplike(request:FlipLikeRequest) {
+    const url = `${API_URL}/flip-like`;
+    return fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...authHeader(url) },
+        body: JSON.stringify(request),
+    })
 }

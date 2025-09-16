@@ -1,4 +1,4 @@
-import type Song from "../../models/song";
+import type {Song} from "../../models/song";
 import AudioWidget from "./audiowidget";
 import VideoWidget from "./videowidget";
 import { Box, Button, Icon, Paper, Typography } from "@mui/material";
@@ -14,6 +14,7 @@ export default function SongComponent(song: Song) {
     const dispatch = useAppDispatch();
 
     function handleLike() {
+        //todo replace with thunk dispatch
         if (!liked) {
             dispatch(updateUpvotes(
                 {
@@ -40,12 +41,12 @@ export default function SongComponent(song: Song) {
                 <Typography variant="h5">{song.artist}</Typography>
             </div>
             <div>
-                {song.video !== undefined && song.video !== '' ?
+                {song.videoUrl !== undefined && song.videoUrl !== '' ?
                     (<VideoWidget id={song.id} name={song.name} artist={song.artist} upvotes={song.upvotes}
-                        video={song.video}></VideoWidget>)
+                        video={song.videoUrl}></VideoWidget>)
                     :
                     (<AudioWidget id={song.id} name={song.name} artist={song.artist} upvotes={song.upvotes}
-                        image={song.image} sound={song.sound}></AudioWidget>)}
+                        image={song.imageUrl} sound={song.soundUrl}></AudioWidget>)}
             </div>
 
             <div className="text">

@@ -14,10 +14,12 @@ export default function Navbar() {
   const currentuser: User = useSelector(selectCurrentUser);
   const dispatch = useAppDispatch();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   // const deleteCurrentUserHook = useDeleteCurrentUser();
 
   useEffect(() => {
     setLoggedIn(currentuser !== undefined && currentuser.id !== undefined);
+    setIsAdmin (currentuser.role === 'Admin' || currentuser.role === 'admin');
   }, [currentuser])
 
   async function handleLogout() {
@@ -46,6 +48,12 @@ export default function Navbar() {
             <Button color="inherit" href='/'>Home</Button>
             {
               loggedIn && <Button color="inherit" href='/for-you'>For You</Button>
+            }
+            {
+              loggedIn && <Button color="inherit" href='/library'>Library</Button>
+            }
+            {
+              isAdmin && <Button color="inherit" href='/admin'>Admin</Button>
             }
           </Box>
 
