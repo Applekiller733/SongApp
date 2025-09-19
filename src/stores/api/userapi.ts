@@ -73,7 +73,6 @@ export function apifetchUsersMocked() {
 }
 
 export function apifetchUsers() {
-    //check if works
     const url = `${API_URL}`;
     return fetch(url, {
         method: "GET",

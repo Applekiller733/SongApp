@@ -8,10 +8,12 @@ import './song.css';
 import { useState } from "react";
 import { updateUpvotes } from "../../stores/slices/songdataslice";
 import { useAppDispatch } from "../../hooks/hooks";
+import AddToPlaylistDialog from "./addtoplaylistdialog";
 
 export default function SongComponent(song: Song) {
     const [liked, setLiked] = useState(false);
     const dispatch = useAppDispatch();
+    const [isSaving, setIsSaving] = useState(false);
 
     function handleLike() {
         //todo replace with thunk dispatch
@@ -34,6 +36,14 @@ export default function SongComponent(song: Song) {
         setLiked(!liked);
     }
 
+    function handleSave(){
+        setIsSaving(true);
+    }
+
+    function handleDialogClose(){
+        setIsSaving(false);
+    }
+
     return (
         <Paper className="songcomponent">
             <div className="text">
@@ -43,10 +53,10 @@ export default function SongComponent(song: Song) {
             <div>
                 {song.videoUrl !== undefined && song.videoUrl !== '' ?
                     (<VideoWidget id={song.id} name={song.name} artist={song.artist} upvotes={song.upvotes}
-                        video={song.videoUrl}></VideoWidget>)
+                        videoUrl={song.videoUrl}></VideoWidget>)
                     :
                     (<AudioWidget id={song.id} name={song.name} artist={song.artist} upvotes={song.upvotes}
-                        image={song.imageUrl} sound={song.soundUrl}></AudioWidget>)}
+                        imageUrl={song.imageUrl} soundUrl={song.soundUrl}></AudioWidget>)}
             </div>
 
             <div className="text">
@@ -64,6 +74,8 @@ export default function SongComponent(song: Song) {
                             </>
                     }
                 </Button>
+                <Button color="success" onClick={handleSave}>Save</Button>
+                <AddToPlaylistDialog open={isSaving} song={song} handleDialogClose={handleDialogClose}></AddToPlaylistDialog>
                 {/* <Typography>Upvotes: {song.upvotes}</Typography> */}
             </div>
 

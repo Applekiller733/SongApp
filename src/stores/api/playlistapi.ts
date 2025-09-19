@@ -29,7 +29,6 @@ export function apifetchplaylistbyid(id:number){
     return fetch(url, {
         method: "GET",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
-        body: JSON.stringify(id),
     })
     .then(response => response.json())
     // .then(p => {
@@ -49,7 +48,6 @@ export function apifetchplaylistscreatedbyaccount(accountid:number){
     return fetch(url, {
         method: "GET",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
-        body: JSON.stringify(accountid),
     })
     .then (response => response.json())
     // .then (response => {
@@ -71,9 +69,20 @@ export function apifetchplaylistssavedbyaccount(accountid:number){
     return fetch(url, {
         method: "GET",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
-        body: JSON.stringify(accountid),
     })
     .then(response => response.json())
+    // .then (response => {
+    //     return response.map((p:any) => {
+    //         const playlist:Playlist = {
+    //             id: p.id,
+    //             name: p.name,
+    //             createdAt: p.createdAt,
+    //             updatedAt: p.updatedAt,
+    //             songs: p.songs,
+    //         }
+    //         return playlist;
+    //     })
+    // })
 }
 
 export function apicreateplaylist(request: CreatePlaylistRequest) {

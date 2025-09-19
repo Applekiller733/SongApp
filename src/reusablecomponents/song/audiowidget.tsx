@@ -1,5 +1,5 @@
 import { IconButton } from "@mui/material";
-import type Song from "../../models/song";
+import type {Song} from "../../models/song";
 import { useRef, useState } from "react";
 import ReactPlayer from 'react-player'; ``
 import "./song.css";
@@ -31,8 +31,8 @@ export default function AudioWidget(song: Song) {
     return (
         <div className="audiowidget">
             <div className="audiowidget-overlapping-items">
-                {song.image !== undefined && song.image !== '' ?
-                    <img src={song.image} className="songimage"></img>
+                {song.imageUrl !== undefined && song.imageUrl !== '' ?
+                    <img src={song.imageUrl} className="songimage"></img>
                     :
                     <img src='/songdefaulticon.jpg' className="songimage"></img>
                 }
@@ -56,7 +56,7 @@ export default function AudioWidget(song: Song) {
             </div>
 
             {/*ref={player}*/}
-            <ReactPlayer ref={player} src={song.sound} playing={isPlaying} controls={false} height={0} width={0}
+            <ReactPlayer ref={player} src={song.soundUrl} playing={isPlaying} controls={false} height={0} width={0}
                 style={{ display: "none", margin: 0, padding: 0 }}></ReactPlayer>
         </div>
     );

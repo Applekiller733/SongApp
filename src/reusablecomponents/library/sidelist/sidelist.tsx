@@ -1,27 +1,14 @@
 import { ThemeProvider } from "@emotion/react";
 import { darkTheme } from "../../../themes/themes";
 import { Box, Button, List, ListItem, Paper, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../../../stores/slices/userdataslice";
-import { selectOwnPlaylists } from "../../../stores/slices/playlistdataslice";
-import { useEffect, type MouseEventHandler } from "react";
-import { useAppDispatch } from "../../../hooks/hooks";
-import { fetchPlaylistsSavedByAccountId } from "../../../stores/thunks/playlistthunks";
 import PlaylistListItem from "./playlistlistitem";
+import type { Playlist } from "../../../models/playlist";
 
-export default function SideList({ handlePlaylistClick, handleCreatePlaylist }: {
-    handlePlaylistClick: MouseEventHandler<HTMLButtonElement>;
-    handleCreatePlaylist: MouseEventHandler<HTMLButtonElement>;
+export default function SideList({ handlePlaylistClick, handleCreatePlaylist, playlists }: {
+    handlePlaylistClick: (event: React.MouseEvent, id: string) => void;
+    handleCreatePlaylist: () => void;
+    playlists: Playlist[];
 }) {
-    const user = useSelector(selectCurrentUser);
-    const playlists = useSelector(selectOwnPlaylists);
-    const dispatch = useAppDispatch();
-
-    //todo might need to be changed
-    useEffect(() => {
-        if (user.id)
-            dispatch(fetchPlaylistsSavedByAccountId(user.id));
-    }, [user])
 
     return (
         <ThemeProvider theme={darkTheme}>
@@ -35,7 +22,7 @@ export default function SideList({ handlePlaylistClick, handleCreatePlaylist }: 
                             {
                                 playlists.map((p) => (
                                     <ListItem key={p.id}>
-                                        <Button onClick={handlePlaylistClick}>
+                                        <Button onClick={(event) => {handlePlaylistClick(event, p.id)}}>
                                             <PlaylistListItem id={p.id}
                                                 name={p.name} createdAt={p.createdAt}
                                                 updatedAt={p.updatedAt} songs={p.songs} />

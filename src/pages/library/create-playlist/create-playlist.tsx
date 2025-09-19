@@ -8,10 +8,12 @@ import type { CreatePlaylistRequest } from "../../../models/playlist";
 import { useAppDispatch } from "../../../hooks/hooks";
 import { createPlaylist } from "../../../stores/thunks/playlistthunks";
 import { useState } from "react";
+import AddSongsGrid from "../../../reusablecomponents/library/create-playlist-datagrids/addsongsdatagrid";
 
 export default function CreatePlaylist() {
     const [status, setStatus] = useState('init');
     const dispatch = useAppDispatch();
+
 
     const validationschema = Yup.object().shape({
         name: Yup.string().required("Playlist Name is required!")
@@ -20,10 +22,14 @@ export default function CreatePlaylist() {
     const CreatePlaylistFormik = useFormik({
         initialValues: {
             name: '',
+            songIds: [],
         },
         validationSchema: validationschema,
         onSubmit: (values) => {
-
+            handleSubmit({
+                name: values.name,
+                songIds: values.songIds,
+            });
         }
     })
 
