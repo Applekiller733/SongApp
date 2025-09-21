@@ -10,6 +10,7 @@ import { useFormik } from 'formik';
 import type { AuthenticateRequest, User } from "../../../models/user";
 import * as Yup from "yup";
 import { login } from '../../../stores/thunks/userthunks';
+import { startRefreshTokenTimer, updateCurrentUserHelper } from '../../../utils/helpers/userhelpers';
 
 export default function Login() {
     // const users = useSelector(selectAllUsers);
@@ -23,8 +24,13 @@ export default function Login() {
     async function handleSubmit(request: AuthenticateRequest) {
         setStatus('loading');
         let response = await dispatch(login(request));
-        if (response.payload){
+
+        console.log(response.meta.requestStatus);
+        console.log(response.payload);
+        if (response.meta.requestStatus === 'fulfilled'){
             setStatus('successful');
+            updateCurrentUserHelper(response.payload);
+            startRefreshTokenTimer();
         }
         else {
             setStatus('failed');

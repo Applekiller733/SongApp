@@ -3,13 +3,20 @@ import type {Playlist, CreatePlaylistRequest, UpdatePlaylistRequest, DeletePlayl
 
 const API_URL = `${import.meta.env.VITE_API_URL}/playlists`;
 
-export function apifetchplaylists(){
+export async function apifetchplaylists(){
     const url = `${API_URL}`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method:"GET",
         headers: {"Content-Type":"application/json", ...authHeader(url)},
     })
-    .then(response => response.json())
+
+    const data = await response.json();
+    if (!response.ok){
+        throw new Error(data.message || "Fetching Playlists failed");
+    }
+
+    return data;
+    // .then(response => response.json())
     // .then(response => {
     //     return response.map((p:any) => {
     //         const playlist:Playlist = {
@@ -24,13 +31,20 @@ export function apifetchplaylists(){
     // })
 }
 
-export function apifetchplaylistbyid(id:number){
+export async function apifetchplaylistbyid(id:number){
     const url = `${API_URL}/${id}`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "GET",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
     })
-    .then(response => response.json())
+
+    const data = await response.json();
+    if (!response.ok){
+        throw new Error(data.message || "Fetching Playlist by Id failed");
+    }
+
+    return data;
+    // .then(response => response.json())
     // .then(p => {
     //     const playlist:Playlist = {
     //         id: p.id,
@@ -43,13 +57,20 @@ export function apifetchplaylistbyid(id:number){
     // })
 }
 
-export function apifetchplaylistscreatedbyaccount(accountid:number){
+export async function apifetchplaylistscreatedbyaccount(accountid:number){
     const url = `${API_URL}/made-by/${accountid}`
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "GET",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
     })
-    .then (response => response.json())
+
+    const data = await response.json();
+    if (!response.ok){
+        throw new Error(data.message || "Fetching Playlists created by Account failed");
+    }
+
+    return data;
+    // .then (response => response.json())
     // .then (response => {
     //     return response.map((p:any) => {
     //         const playlist:Playlist = {
@@ -64,13 +85,20 @@ export function apifetchplaylistscreatedbyaccount(accountid:number){
     // })
 }
 
-export function apifetchplaylistssavedbyaccount(accountid:number){
+export async function apifetchplaylistssavedbyaccount(accountid:number){
     const url = `${API_URL}/saved-by/${accountid}`
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "GET",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
     })
-    .then(response => response.json())
+
+    const data = await response.json();
+    if (!response.ok){
+        throw new Error(data.message || "Fetching Playlist saved by Account failed");
+    }
+
+    return data;
+    // .then(response => response.json())
     // .then (response => {
     //     return response.map((p:any) => {
     //         const playlist:Playlist = {
@@ -85,29 +113,50 @@ export function apifetchplaylistssavedbyaccount(accountid:number){
     // })
 }
 
-export function apicreateplaylist(request: CreatePlaylistRequest) {
+export async function apicreateplaylist(request: CreatePlaylistRequest) {
     const url = `${API_URL}/create-playlist`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "POST",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
         body: JSON.stringify(request),
     })
+
+    const data = await response.json();
+    if (!response.ok){
+        throw new Error(data.message || "Creating Playlist failed");
+    }
+
+    return data;
 }
 
-export function apiupdateplaylist(request: UpdatePlaylistRequest){
+export async function apiupdateplaylist(request: UpdatePlaylistRequest){
     const url = `${API_URL}`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "PUT",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
         body: JSON.stringify(request),
     })
+
+    const data = await response.json();
+    if (!response.ok){
+        throw new Error(data.message || "Updating Playlist failed");
+    }
+
+    return data;
 }
 
-export function apideleteplaylist(request: DeletePlaylistRequest){
+export async function apideleteplaylist(request: DeletePlaylistRequest){
     const url = `${API_URL}`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "DELETE",
         headers: {"Content-Type": "application/json", ...authHeader(url)},
         body: JSON.stringify(request),
     })
+
+    const data = await response.json();
+    if (!response.ok){
+        throw new Error(data.message || "Deleting Playlist failed");
+    }
+
+    return data;
 }

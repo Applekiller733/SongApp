@@ -6,13 +6,16 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import type { CreatePlaylistRequest } from "../../../models/playlist";
 import { useAppDispatch } from "../../../hooks/hooks";
-import { createPlaylist } from "../../../stores/thunks/playlistthunks";
+import { createPlaylist, fetchPlaylistsSavedByAccountId } from "../../../stores/thunks/playlistthunks";
 import { useState } from "react";
 import AddSongsGrid from "../../../reusablecomponents/library/create-playlist-datagrids/addsongsdatagrid";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../../stores/slices/userdataslice";
 
-export default function CreatePlaylist() {
+export default function CreatePlaylist({handleMainPage} : {handleMainPage:any}) {
     const [status, setStatus] = useState('init');
     const dispatch = useAppDispatch();
+    const user = useSelector(selectCurrentUser);
 
 
     const validationschema = Yup.object().shape({
@@ -36,8 +39,10 @@ export default function CreatePlaylist() {
     async function handleSubmit(request:CreatePlaylistRequest){
         setStatus('loading');
         const response = await dispatch(createPlaylist(request));
-        if (response){
+        if (response.meta.requestStatus === 'fulfilled' && user.id){
             setStatus('successful');
+            dispatch(fetchPlaylistsSavedByAccountId(user.id));
+            handleMainPage();
         }
         else {
             setStatus('failed');

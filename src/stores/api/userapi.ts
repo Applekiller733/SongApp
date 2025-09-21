@@ -3,6 +3,7 @@
 
 import { useAppDispatch, useUpdateCurrentUser } from "../../hooks/hooks";
 import type { AuthenticateRequest, ForgotPasswordRequest, RegisterRequest, ResetPasswordRequest, UpdateUserRequest, User, VerifyEmailRequest } from "../../models/user";
+import { startRefreshTokenTimer, updateCurrentUserHelper } from "../../utils/helpers/userhelpers";
 import { updateCurrentUser } from "../slices/userdataslice";
 import type { AppDispatch } from "../store";
 import { getAppDispatch } from "../storedispatch";
@@ -27,46 +28,6 @@ const userdata = [
 //     const updateCurrentUserHook = useUpdateCurrentUser();
 //     updateCurrentUserHook(user);
 // }
-
-function updateCurrentUserHelper(user: User) {
-    const dispatch = getAppDispatch();
-    // console.log(user);
-    if (localStorage.getItem('currentuser')) {
-        var storageuser = JSON.parse(localStorage.getItem('currentuser') || "");
-        //todo maybe reimplement a bit more nicely
-        if (storageuser.id !== user.id) {
-            storageuser.id = user.id;
-        }
-        if (storageuser.username !== user.username) {
-            storageuser.username = user.username;
-        }
-        if (storageuser.role !== user.role) {
-            storageuser.role = user.role;
-        }
-        if (storageuser.email !== user.email) {
-            storageuser.email = user.email;
-        }
-        localStorage.setItem('currentuser', JSON.stringify(storageuser));
-    }
-    else {
-        localStorage.setItem('currentuser', JSON.stringify(user));
-    }
-    dispatch(updateCurrentUser(user));
-}
-
-function deleteCurrentUserHelper() {
-    const dispatch = getAppDispatch();
-    localStorage.removeItem('currentuser');
-    // console.log("Finished removing item from local storage");
-    const emptyuser: User = {
-        id: undefined,
-        username: '',
-        email: '',
-        role: '',
-        token: '',
-    }
-    dispatch(updateCurrentUser(emptyuser));
-}
 
 export function apifetchUsersMocked() {
     return new Promise(resolve => setTimeout(() => { resolve(userdata) }, 500));
@@ -120,44 +81,60 @@ export function apiverify(request: VerifyEmailRequest) {
     })
 }
 
-export function apilogin(request: AuthenticateRequest) {
+export async function apilogin(request: AuthenticateRequest) {
     const url = `${API_URL}/authenticate`
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(request),
         credentials: "include",
     })
-        .then(response => response.json())
-        .then(user => {
-            // publish user and start timer to refresh token
-            // console.log(user);
-            // localStorage.setItem('currentuser', JSON.stringify(user));
-            const usermodel: User = {
-                id: user.id,
-                username: user.userName,
-                email: user.email,
-                role: user.role,
-                token: user.jwtToken
-            }
-            // console.log(usermodel);
-            updateCurrentUserHelper(usermodel);
-            startRefreshTokenTimer();
-            return user;
-        });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || "Authentication failed");
+    }
+
+    return data; 
+
+        // .then(response => response.json())
+        // .then(user => {
+        //     console.log(user);
+        //     // publish user and start timer to refresh token
+        //     // console.log(user);
+        //     // localStorage.setItem('currentuser', JSON.stringify(user));
+        //     const usermodel: User = {
+        //         id: user.id,
+        //         username: user.userName,
+        //         email: user.email,
+        //         role: user.role,
+        //         token: user.jwtToken
+        //     }
+        //     // console.log(usermodel);
+        //     updateCurrentUserHelper(usermodel);
+        //     startRefreshTokenTimer();
+        //     return user;
+        // });
 }
 
-export function apilogout() {
+export async function apilogout() {
     // revoke token, stop refresh timer, remove from local storage
     const url = `${API_URL}/revoke-token`;
-    fetch(url, {
+    const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authHeader(url) },
         credentials: "include"
     });
-    stopRefreshTokenTimer();
-    // localStorage.removeItem('currentuser');
-    deleteCurrentUserHelper();
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || "Logging out failed");
+    }
+
+    return data; 
+    // stopRefreshTokenTimer();
+    // // localStorage.removeItem('currentuser');
+    // deleteCurrentUserHelper();
 }
 
 export function apiforgotpassword(request: ForgotPasswordRequest) {
@@ -179,7 +156,7 @@ export function apiresetpassword(request: ResetPasswordRequest) {
 }
 
 //todo maybe refactor
-export function apiupdateuser(request: UpdateUserRequest) {
+export async function apiupdateuser(request: UpdateUserRequest) {
     const url = `${API_URL}`;
     const formData = new FormData();
     var stringid = (request.id as unknown) as string;
@@ -197,26 +174,33 @@ export function apiupdateuser(request: UpdateUserRequest) {
         formData.append("ProfilePicture.FormFile", request.profilepicture.file);
     }
 
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "PUT",
         headers: {
             ...authHeader(url),
         },
         body: formData,
     })
-        .then(response => response.json())
-        .then(user => {
-            const usermodel: User = {
-                id: user.id,
-                username: user.userName,
-                email: user.email,
-                role: user.role,
-                token: user.jwtToken
-            }
-            updateCurrentUserHelper(usermodel);
-            // startRefreshTokenTimer();
-            return user;
-        });
+
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || "Updating user failed");
+    }
+
+    return data; 
+        // .then(response => response.json())
+        // .then(user => {
+        //     const usermodel: User = {
+        //         id: user.id,
+        //         username: user.userName,
+        //         email: user.email,
+        //         role: user.role,
+        //         token: user.jwtToken
+        //     }
+        //     updateCurrentUserHelper(usermodel);
+        //     // startRefreshTokenTimer();
+        //     return user;
+        // });
 }
 
 export function apideleteuser(id: number) {
@@ -227,7 +211,7 @@ export function apideleteuser(id: number) {
     })
 }
 
-function apirefreshToken() {
+export function apirefreshToken() {
     const url = `${API_URL}/refresh-token`;
     return fetch(url, {
         method: "POST",
@@ -264,45 +248,4 @@ function apirefreshToken() {
 
 }
 
-let refreshTokenTimeout: any;
-
-//todo verify if token refresh timer works and fix if not
-function startRefreshTokenTimer() {
-    console.log("START OF REFRESH TOKEN TIMER");
-    console.log(localStorage.getItem('currentuser'));
-    if (localStorage.getItem('currentuser')) {
-        //@ts-ignore
-        const user = JSON.parse(localStorage.getItem('currentuser'));
-
-        console.log("INSIDE REFRESH TOKEN TIMER");
-
-        const jwtToken = JSON.parse(atob(user.jwtToken.split('.')[1]));
-
-        // console.log(jwtToken);
-        // set a timeout to refresh the token a minute before it expires
-        // console.log(jwtToken.exp);
-        const expires = new Date(jwtToken.exp * 1000);
-        // const timeout = expires.getTime() - Date.now() - (60 * 1000);
-        const timeout = 5;
-        // console.log(timeout);
-        const trials = 3;
-        refreshTokenTimeout = setTimeout(apirefreshToken, timeout);
-        // refreshTokenTimeout = setTimeout(() => { refreshTokenTrials(trials) }, timeout);
-    }
-}
-
-// async function refreshTokenTrials(trials: number) {
-//     const timeout = 5 * 1000;
-//     const response = await apirefreshToken();
-//     if (typeof response === typeof Error || response === undefined || response === null && (trials > 0)) {
-//         setTimeout(() => { refreshTokenTrials(trials - 1) }, timeout)
-//     }
-//     else {
-//         startRefreshTokenTimer();
-//     }
-// }
-
-function stopRefreshTokenTimer() {
-    clearTimeout(refreshTokenTimeout);
-}
 

@@ -35,8 +35,11 @@ export default function AddToPlaylistDialog({ open, song, handleDialogClose }
             name: playlist.name,
             songIds: songIds,
         }));
-        if (response) {
-
+        if (response.meta.requestStatus === 'fulfilled' && user.id) {
+            await dispatch(fetchPlaylistsSavedByAccountId(user.id));
+        }
+        else {
+            console.log(response.payload);
         }
     }
 

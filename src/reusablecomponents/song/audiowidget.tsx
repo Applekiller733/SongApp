@@ -19,6 +19,10 @@ export default function AudioWidget(song: Song) {
         setIsPlaying(!isPlaying);
     }
 
+    function handleEndedPlaying(){
+        setIsPlaying(false);
+    }
+
     function handleRevert() {
         //todo fix, currently doesnt seem to properly restart the song
         if (player.current !== null) {
@@ -57,7 +61,7 @@ export default function AudioWidget(song: Song) {
 
             {/*ref={player}*/}
             <ReactPlayer ref={player} src={song.soundUrl} playing={isPlaying} controls={false} height={0} width={0}
-                style={{ display: "none", margin: 0, padding: 0 }}></ReactPlayer>
+                style={{ display: "none", margin: 0, padding: 0 }} onEnded={handleEndedPlaying}></ReactPlayer>
         </div>
     );
 }

@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import './navbar.css';
 import { useAppDispatch, useDeleteCurrentUser } from "../hooks/hooks";
 import { logout } from "../stores/thunks/userthunks";
+import { deleteCurrentUserHelper, stopRefreshTokenTimer } from "../utils/helpers/userhelpers";
 
 
 export default function Navbar() {
@@ -23,7 +24,16 @@ export default function Navbar() {
   }, [currentuser])
 
   async function handleLogout() {
-    await dispatch(logout());
+    const response = await dispatch(logout());
+
+    console.log(response.meta.requestStatus);
+    if (response.meta.requestStatus === 'fulfilled'){
+      deleteCurrentUserHelper();
+      stopRefreshTokenTimer();
+    }
+    else {
+      console.log("Logging out failed");
+    }
     // const emptyuser: User = {
     //   id: undefined,
     //   username: '',

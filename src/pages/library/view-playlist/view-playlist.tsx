@@ -10,22 +10,30 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router";
 import { selectLoadedPlaylist } from "../../../stores/slices/playlistdataslice";
 
-export default function ViewPlaylist({ id, handleDeletePlaylist }: { id: string, handleDeletePlaylist:any }) {
+export default function ViewPlaylist({ id, handleDeletePlaylist, handleMainPage }:
+    { id: string, handleDeletePlaylist: any, handleMainPage: any }) {
     const dispatch = useAppDispatch();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     // const [isDeleted, setIsDeleted] = useState<boolean>(false);
     const playlist = useSelector(selectLoadedPlaylist);
     const numid = (id as unknown) as number;
 
-    useEffect(() => {
-        dispatch(fetchLoadedPlaylist(numid));
-    }, [])
+    // useEffect(() => {
+    //     dispatch(fetchLoadedPlaylist(numid));
+    // }, [])
+    // useEffect(() => {
+    //     if (isDeleted){
+    //         handleMainPage();
+    //     }
+    // }, [isDeleted])
 
     function handlePlay() {
-
+        //should navigate to a separate page with a vertical carousel containing the songs in the playlist, autoplayed
+        return "NOT IMPLEMENTED";
     }
 
     async function handleRowSelect() {
+        //should open a side component with details about the song/kind of like a small song profile
         return "NOT IMPLEMENTED";
     }
 
@@ -40,6 +48,10 @@ export default function ViewPlaylist({ id, handleDeletePlaylist }: { id: string,
                 name: playlist.name,
                 songIds: songIds
             }))
+            if (response.meta.requestStatus === 'fulfilled') {
+                // console.log("Update Successful");
+                dispatch(fetchLoadedPlaylist(numid));
+            }
         }
     }
 
@@ -49,6 +61,20 @@ export default function ViewPlaylist({ id, handleDeletePlaylist }: { id: string,
     //         // setIsDeleted(true);
     //     }
     // }
+    // async function handleDeletePlaylist(id: number) {
+    //     const response = await dispatch(deletePlaylist({ id: id }))
+    //     if (response.meta.requestStatus === 'fulfilled') {
+    //         setIsDeleted(true);
+    //         // dispatch(fetchPlaylistsSavedByAccountId(user.id));
+    //     }
+    // }
+    async function handleDeleteClick(id: number) {
+        const wasSuccessful = handleDeletePlaylist(id);
+        // console.log(response);
+        if (wasSuccessful) {
+            handleMainPage();
+        }
+    }
 
     function handleFlipEditMode() {
         setIsEditing(!isEditing);
@@ -69,7 +95,7 @@ export default function ViewPlaylist({ id, handleDeletePlaylist }: { id: string,
                 rows={playlist.songs}
                 isEditing={isEditing}
             ></SelectedSongsGrid>
-            {isEditing && <Button onClick={handleDeletePlaylist}>Delete Playlist</Button>}
+            {isEditing && <Button onClick={() => { handleDeleteClick(numid) }}>Delete Playlist</Button>}
             {/* {isDeleted && <Navigate to={'/library'}></Navigate>} */}
         </Box>
     );

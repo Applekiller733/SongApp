@@ -8,6 +8,7 @@ import "./profile.css";
 import { useAppDispatch } from "../../hooks/hooks";
 import { update } from "../../stores/thunks/userthunks";
 import { useState } from "react";
+import { updateCurrentUserHelper } from "../../utils/helpers/userhelpers";
 
 export default function EditProfile() {
     const params = useParams();
@@ -31,7 +32,7 @@ export default function EditProfile() {
         let response = await dispatch(update(request));
 
         setStatus('loading');
-        if (response) {
+        if (response.meta.requestStatus === 'fulfilled') {
             setStatus('successful');
             // const user: User = {
             //     id: response.payload.id,
@@ -41,6 +42,7 @@ export default function EditProfile() {
             //     token: response.payload.jwtToken,
             // }
             // updateCurrentUserHook(user);
+            updateCurrentUserHelper(response.payload);
         }
         else {
             setStatus('failed');

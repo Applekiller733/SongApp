@@ -46,8 +46,15 @@ export const userdataSlice = createSlice(
             })
                 .addCase(fetchUsers.fulfilled, (state, action) => {
                     state.status = 'succeeded';
-                    const loadedUsers = action.payload?.map((user: User) => {
+                    const loadedUsers = action.payload?.map((u:any) => {
                         //in case i need to add any other ops here/remove fields etc idk
+                        const user:User = {
+                            id:u.id,
+                            username: u.userName,
+                            email: u.email,
+                            role: u.role,
+                            token: u.jwtToken,
+                        }
                         return user;
                     });
                     console.log(loadedUsers);

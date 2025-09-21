@@ -85,13 +85,15 @@ export default function AdminUserGrid() {
     }, [])
 
     useEffect(() => {
-        // console.log(users);
-        const newrows = users.map(u =>
-        ({
-            id: u.id,
-            name: u.username,
-            role: u.role,
-        })
+        console.log(users);
+        const newrows = users.map(u => {
+            console.log(u.username);
+            return {
+                id: u.id,
+                name: u.username,
+                role: u.role,
+            }
+        }
         );
         // console.log(newrows);
         setRows(newrows);
@@ -143,7 +145,7 @@ export default function AdminUserGrid() {
         }
     };
 
-    const processRowUpdate = (newRow: GridRowModel) => {
+    const processRowUpdate = async (newRow: GridRowModel) => {
         const updatedRow = { ...newRow, isNew: false };
 
         const updaterequest: UpdateUserRequest = {
@@ -155,10 +157,16 @@ export default function AdminUserGrid() {
             confirmpassword: null,
             profilepicture: null,
         };
-        dispatch(update(updaterequest));
+        //todo test
+        const response = await dispatch(update(updaterequest));
+        if (response.meta.requestStatus === 'fulfilled') {
 
-        setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-        return updatedRow;
+            setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+            return updatedRow;
+        }
+        else {
+            console.log("Updating User from grid failed");
+        }
     };
 
     const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {

@@ -60,13 +60,21 @@ export function fetchSongsMocked() {
 }
 
 //todo test if it properly returns the song list
-export function apifetchsongs() {
+export async function apifetchsongs() {
     const url = `${API_URL}`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
     })
-        .then(response => response.json())
+
+    const data = await response.json();
+
+    if (!response.ok){
+        throw new Error(data.message || "Fetching Songs failed");
+    }
+
+    return data;
+        // .then(response => response.json())
         // .then(response => {
         //     return response.map((s: any) => {
         //         const song: Song = {
@@ -85,13 +93,20 @@ export function apifetchsongs() {
 }
 
 //todo test if it properly returns song
-export function apifetchsongbyid(id: number) {
+export async function apifetchsongbyid(id: number) {
     const url = `${API_URL}/${id}`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
     })
-        .then(response => response.json())
+    const data = await response.json();
+
+    if (!response.ok){
+        throw new Error(data.message || "Fetching Song by Id failed");
+    }
+
+    return data;
+        // .then(response => response.json())
         // .then(s => {
         //     const song: Song = {
         //         id: s.id,
@@ -106,30 +121,51 @@ export function apifetchsongbyid(id: number) {
         // })
 }
 
-export function apicreatesong(request: CreateSongRequest) {
+export async function apicreatesong(request: CreateSongRequest) {
     const url = `${API_URL}/create-song`;
     console.log(request);
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authHeader(url) },
         body: JSON.stringify(request),
     })
+    const data = await response.json();
+
+    if (!response.ok){
+        throw new Error(data.message || "Creating Song failed");
+    }
+
+    return data;
 }
 
-export function apideletesong(request: DeleteSongRequest) {
+export async function apideletesong(request: DeleteSongRequest) {
     const url = `${API_URL}`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "DELETE",
         headers: { "Content-Type": "application/json", ...authHeader(url) },
         body: JSON.stringify(request)
     })
+    const data = await response.json();
+
+    if (!response.ok){
+        throw new Error(data.message || "Deleting Song failed");
+    }
+
+    return data;
 }
 
-export function apifliplike(request:FlipLikeRequest) {
+export async function apifliplike(request:FlipLikeRequest) {
     const url = `${API_URL}/flip-like`;
-    return fetch(url, {
+    const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...authHeader(url) },
         body: JSON.stringify(request),
     })
+    const data = await response.json();
+
+    if (!response.ok){
+        throw new Error(data.message || "Flipping Like failed");
+    }
+
+    return data;
 }

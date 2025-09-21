@@ -5,76 +5,50 @@ import {
     apifetchplaylistscreatedbyaccount, apifetchplaylistssavedbyaccount, apiupdateplaylist
 } from "../api/playlistapi";
 
-export const fetchPlaylists = createAsyncThunk('playlists/fetchPlaylists', async () => {
+export const fetchPlaylists = createAsyncThunk('playlists/fetchPlaylists', async (_, thunkAPI) => {
     try {
-        const response = await apifetchplaylists();
-
-        if (!response) {
-            throw new Error("Fetching Playlists failed");
-        }
-        return response;
+        return await apifetchplaylists();
     }
     catch (err: any) {
-        return err.message;
+        return thunkAPI.rejectWithValue(err.message);
     }
 })
 
-export const fetchPlaylistById = createAsyncThunk('playlists/fetchPlaylistById', async (id: number) => {
+export const fetchPlaylistById = createAsyncThunk('playlists/fetchPlaylistById', async (id: number, thunkAPI) => {
     try {
-        const response: Playlist = await apifetchplaylistbyid(id);
-
-        if (!response) {
-            throw new Error("Fetching Playlist by Id failed");
-        }
-        return response;
+        return await apifetchplaylistbyid(id);
     }
     catch (err: any) {
-        return err.message;
+        return thunkAPI.rejectWithValue(err.message);
     }
 })
 
-export const fetchLoadedPlaylist = createAsyncThunk('playlists/fetchLoadedPlaylist', async (id: number) => {
+export const fetchLoadedPlaylist = createAsyncThunk('playlists/fetchLoadedPlaylist', async (id: number, thunkAPI) => {
     try {
-        const response: Playlist = await apifetchplaylistbyid(id);
-
-        if (!response) {
-            throw new Error("Fetching Playlist by Id failed");
-        }
-        return response;
+        return await apifetchplaylistbyid(id);
     }
     catch (err: any) {
-        return err.message;
+        return thunkAPI.rejectWithValue(err.message);
     }
 })
 
 export const fetchPlaylistsCreatedByAccountId = createAsyncThunk('playlists/fetchPlaylistsCreatedByAccountId',
-    async (accountid: number) => {
+    async (accountid: number, thunkAPI) => {
         try {
-            const response: Playlist[] = await apifetchplaylistscreatedbyaccount(accountid);
-
-            if (!response) {
-                throw new Error("Fetching Playlists Created by Account Id failed");
-            }
-            return response;
+            return await apifetchplaylistscreatedbyaccount(accountid);
         }
         catch (err: any) {
-            return err.message;
+            return thunkAPI.rejectWithValue(err.message);
         }
     })
 
 export const fetchPlaylistsSavedByAccountId = createAsyncThunk('playlists/fetchPlaylistsSavedByAccountId',
-    async (accountid: number) => {
+    async (accountid: number, thunkAPI) => {
         try {
-            const response: any = await apifetchplaylistssavedbyaccount(accountid);
-            // console.log(response);
-
-            if (!response) {
-                throw new Error("Fetching Playlists Saved by Account Id failed");
-            }
-            return response;
+            return await apifetchplaylistssavedbyaccount(accountid);
         }
         catch (err: any) {
-            return err.message;
+            return thunkAPI.rejectWithValue(err.message);
         }
     })
 
@@ -94,44 +68,29 @@ export const fetchPlaylistsSavedByAccountId = createAsyncThunk('playlists/fetchP
 //     }
 // })
 
-export const createPlaylist = createAsyncThunk('playlists/createPlaylist', async (request: CreatePlaylistRequest) => {
+export const createPlaylist = createAsyncThunk('playlists/createPlaylist', async (request: CreatePlaylistRequest, thunkAPI) => {
     try {
-        const response = await apicreateplaylist(request);
-
-        if (!response) {
-            throw new Error("Creating Playlist failed");
-        }
-        return response;
+        return await apicreateplaylist(request);
     }
     catch (err: any) {
-        return err.message;
+        return thunkAPI.rejectWithValue(err.message);
     }
 })
 
-export const updatePlaylist = createAsyncThunk('playlists/updatePlaylist', async (request: UpdatePlaylistRequest) => {
+export const updatePlaylist = createAsyncThunk('playlists/updatePlaylist', async (request: UpdatePlaylistRequest, thunkAPI) => {
     try {
-        const response = await apiupdateplaylist(request);
-
-        if (!response) {
-            throw new Error("Updating Playlist failed");
-        }
-        return response;
+        return await apiupdateplaylist(request);
     }
     catch (err: any) {
-        return err.message;
+        return thunkAPI.rejectWithValue(err.message);
     }
 })
 
-export const deletePlaylist = createAsyncThunk('playlists/deletePlaylist', async (request: DeletePlaylistRequest) => {
+export const deletePlaylist = createAsyncThunk('playlists/deletePlaylist', async (request: DeletePlaylistRequest, thunkAPI) => {
     try {
-        const response = await apideleteplaylist(request);
-
-        if (!response) {
-            throw new Error("Deleting Playlist failed");
-        }
-        return response;
+        return await apideleteplaylist(request);
     }
     catch (err: any) {
-        return err.message;
+        return thunkAPI.rejectWithValue(err.message);
     }
 })

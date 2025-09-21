@@ -30,6 +30,10 @@ export default function Library() {
             dispatch(fetchPlaylistsSavedByAccountId(user.id));
     }, [user])
 
+    function handleMainPage() {
+        setLoadedPage(LibraryPages.main);
+    }
+
     function handleCreatePlaylist() {
         setLoadedPage(LibraryPages.createplaylist);
     }
@@ -47,16 +51,19 @@ export default function Library() {
         setStatus('loading');
         setLoadedPage(LibraryPages.viewplaylist);
         loadPlaylist(id);
-        // let numid = (id as unknown) as number;
-        // await loadPlaylist(numid);
+        // let numid = (id as unknown) as number;`
+        // await loadPlaylist(numid);`
         setStatus('finished');
     }
 
-    async function handleDeletePlaylist(id:number){
+    async function handleDeletePlaylist(id: number) {
         const response = await dispatch(deletePlaylist({ id: id }))
-            if (response) {
-                // setIsDeleted(true);
-            }
+        if (response.meta.requestStatus === 'fulfilled' && user.id) {
+            // setIsDeleted(true);
+            dispatch(fetchPlaylistsSavedByAccountId(user.id));
+            return true;
+        }
+        return false;
     }
 
     return (
@@ -73,9 +80,16 @@ export default function Library() {
                     </div>
                     <div className="page">
                         {loadedPage === LibraryPages.main && <LibraryMainPage></LibraryMainPage>}
-                        {loadedPage === LibraryPages.createplaylist && <CreatePlaylist></CreatePlaylist>}
-                        {loadedPage == LibraryPages.viewplaylist && loadedPlaylist != undefined
-                            && <ViewPlaylist handleDeletePlaylist={handleDeletePlaylist} id={loadedPlaylist.id}></ViewPlaylist>}
+                        {loadedPage === LibraryPages.createplaylist
+                            && <CreatePlaylist
+                                handleMainPage={handleMainPage}
+                            ></CreatePlaylist>}
+                        {loadedPage === LibraryPages.viewplaylist
+                            && <ViewPlaylist
+                                handleMainPage={handleMainPage}
+                                handleDeletePlaylist={() => { handleDeletePlaylist(loadedPlaylist.id as unknown as number) }}
+                                id={loadedPlaylist.id}
+                            ></ViewPlaylist>}
                     </div>
                     <Backdrop
                         sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}

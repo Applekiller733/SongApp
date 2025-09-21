@@ -10,7 +10,7 @@ export default function authHeader(url: any) {
     // console.log(isLoggedIn);
     // console.log(isApiUrl);
     if (isLoggedIn && isApiUrl) {
-        return { Authorization: `Bearer ${user.token}` };
+        return { Authorization: `Bearer ${user.jwtToken}` };
     } else {
         return ''
     };
